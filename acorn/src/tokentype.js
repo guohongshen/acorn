@@ -22,6 +22,46 @@
 // continue jumps to that label.
 
 export class TokenType {
+  /**
+   * ？？？
+   */
+  label = null;
+  /**
+   * 如果是关键字类型，此字段存储关键字的字符串
+   */
+  keyword = null;
+  /**
+   * ？？？
+   */
+  beforeExpr = false;
+  /**
+   * ？？？
+   */
+  startsExpr = false;
+  /**
+   * ？？？
+   */
+  isLoop = false;
+  /**
+   * 是否是赋值类二元运算符(=, +=, -= 等)
+   */
+  isAssign = false;
+  /**
+   * 是否是一元前置运算符
+   */
+  prefix = false;
+  /**
+   * 是否是一元后置运算符
+   */
+  postfix = false;
+  /**
+   * 如果本 token 是一个二元运算符，此字段表示它的运算符优先级。
+   */
+  binop = null;
+  /**
+   * ？？？
+   */
+  updateContext = null;
   constructor(label, conf = {}) {
     this.label = label
     this.keyword = conf.keyword

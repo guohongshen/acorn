@@ -35,12 +35,24 @@ export const keywordRelationalOperator = /^in(stanceof)?$/
 
 // ## Character categories
 
+/**
+ * 除了 ASCLL 字符之外，可以做标识符首字符的字符的集合的正则表达。
+ */
 const nonASCIIidentifierStart = new RegExp("[" + nonASCIIidentifierStartChars + "]")
+/**
+ * 除了 ASCLL 字符之外，可以在标识符字符串里出现的字符的集合的正则表达。
+ */
 const nonASCIIidentifier = new RegExp("[" + nonASCIIidentifierStartChars + nonASCIIidentifierChars + "]")
 
-// This has a complexity linear to the value of the code. The
-// assumption is that looking up astral identifier characters is
-// rare.
+/**
+ * This has a complexity linear to the value of the code. The assumption is
+ * that looking up astral identifier characters is rare.
+ * 码点(code)是否在数组里面。
+ * @param {number} code 码点
+ * @param {number[]} set 繁星点点的(astral)数组（没错就是这么文艺），数组里面存储的都是逐步偏移量，
+ * 数学上来看是一段不连续的（断断续续的）一维空间。
+ * @returns {boolean}
+ */
 function isInAstralSet(code, set) {
   let pos = 0x10000
   for (let i = 0; i < set.length; i += 2) {
@@ -49,23 +61,35 @@ function isInAstralSet(code, set) {
     pos += set[i + 1]
     if (pos >= code) return true
   }
-  return false
+  return false;
+  /**
+   * 图形化解释一下这个函数的作用：
+   *  ...false, [0, ..., 11](true), ...false, [2, ..., 25](true)，每个偏移量都是相对于前驱偏移的。
+   */
 }
 
-// Test whether a given character code starts an identifier.
-
+/**
+ * Test whether a given character code starts an identifier.
+ * @param {number} code 码点
+ * @param {boolean} astral 是否属于繁星字符集
+ * @returns {boolean}
+ */
 export function isIdentifierStart(code, astral) {
-  if (code < 65) return code === 36
-  if (code < 91) return true
-  if (code < 97) return code === 95
-  if (code < 123) return true
+  if (code < 65) return code === 36 // $
+  if (code < 91) return true // A-Z
+  if (code < 97) return code === 95 // _
+  if (code < 123) return true // a-z
   if (code <= 0xffff) return code >= 0xaa && nonASCIIidentifierStart.test(String.fromCharCode(code))
   if (astral === false) return false
-  return isInAstralSet(code, astralIdentifierStartCodes)
+  return isInAstralSet(code, astralIdentifierStartCodes) // 再检查一遍？
 }
 
-// Test whether a given character is part of an identifier.
-
+/**
+ * Test whether a given character is part of an identifier.
+ * @param {number} code 码点
+ * @param {boolean} astral 否属于繁星字符集
+ * @returns {boolean}
+ */
 export function isIdentifierChar(code, astral) {
   if (code < 48) return code === 36
   if (code < 58) return true
